@@ -1,1 +1,791 @@
-<meta http-equiv="refresh" content="0; url=templates/index.html">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>💰 Dompet Mingguan</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #7C5CBF;
+      --purple-light: #A78BDA;
+      --purple-soft: #EDE9F8;
+      --blue: #5B8DEF;
+      --blue-soft: #E8F0FE;
+      --mint: #4ECDC4;
+      --mint-soft: #E0F7F5;
+      --yellow: #FFD93D;
+      --yellow-soft: #FFF8DC;
+      --pink: #FF6B9D;
+      --pink-soft: #FFE8F3;
+      --orange: #FF9F43;
+      --orange-soft: #FFF0E0;
+      --green: #26de81;
+      --red: #FC5C65;
+      --bg: #F5F0FF;
+      --card: #FFFFFF;
+      --text: #2D1B69;
+      --text-light: #7B6FA0;
+      --radius: 24px;
+      --shadow: 0 8px 32px rgba(124,92,191,0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Floating blobs */
+    .blob-container {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.25;
+      animation: float 8s ease-in-out infinite;
+    }
+    .blob-1 { width: 300px; height: 300px; background: var(--purple); top: -100px; right: -80px; animation-delay: 0s; }
+    .blob-2 { width: 250px; height: 250px; background: var(--mint); bottom: 20%; left: -80px; animation-delay: 3s; }
+    .blob-3 { width: 180px; height: 180px; background: var(--yellow); top: 50%; right: -60px; animation-delay: 1.5s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-20px) scale(1.05); }
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 16px 100px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 24px 0 12px;
+      opacity: 0;
+      animation: slideDown 0.6s ease forwards;
+    }
+    .header h1 { font-size: 26px; font-weight: 900; color: var(--purple); }
+    .header p { font-size: 13px; color: var(--text-light); margin-top: 4px; font-weight: 600; }
+    .week-badge {
+      display: inline-block;
+      background: var(--purple-soft);
+      color: var(--purple);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    /* Cards animations */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: slideUp 0.6s ease forwards;
+    }
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    .card:nth-child(5) { animation-delay: 0.5s; }
+    .card:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero Card */
+    .hero-card {
+      background: linear-gradient(135deg, #7C5CBF 0%, #9B7FD4 50%, #5B8DEF 100%);
+      color: white;
+      padding: 28px 24px;
+      border-radius: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(124,92,191,0.35);
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50%;
+      top: -60px; right: -40px;
+    }
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      bottom: -30px; left: -20px;
+    }
+
+    .hero-inner {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ring-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+    }
+    .ring-svg { width: 110px; height: 110px; transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: rgba(255,255,255,0.2); stroke-width: 10; }
+    .ring-progress {
+      fill: none;
+      stroke: var(--green);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      transition: stroke-dashoffset 1.5s cubic-bezier(0.4,0,0.2,1), stroke 0.5s;
+    }
+    .ring-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .ring-pct { font-size: 22px; font-weight: 900; color: white; line-height: 1; }
+    .ring-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.8); }
+
+    .hero-info { flex: 1; }
+    .hero-info .status-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+    }
+    .hero-budget { font-size: 11px; opacity: 0.8; font-weight: 600; }
+    .hero-amount { font-size: 28px; font-weight: 900; line-height: 1.1; }
+    .hero-sub { font-size: 12px; opacity: 0.75; margin-top: 4px; font-weight: 600; }
+    .hero-remaining {
+      margin-top: 14px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Quick Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-mini {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      animation: slideUp 0.6s ease forwards;
+    }
+    .stat-mini:nth-child(1) { animation-delay: 0.25s; }
+    .stat-mini:nth-child(2) { animation-delay: 0.35s; }
+    .stat-mini .icon { font-size: 24px; margin-bottom: 6px; }
+    .stat-mini .label { font-size: 11px; color: var(--text-light); font-weight: 700; }
+    .stat-mini .value { font-size: 18px; font-weight: 900; margin-top: 2px; }
+    .stat-mini.green .value { color: var(--mint); }
+    .stat-mini.yellow .value { color: var(--orange); }
+
+    /* Section title */
+    .section-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title span { font-size: 18px; }
+
+    /* Category chips */
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .chip {
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.25s;
+      user-select: none;
+    }
+    .chip:hover { transform: scale(1.05); }
+    .chip.active { border-color: var(--purple); transform: scale(1.08); box-shadow: 0 4px 14px rgba(124,92,191,0.25); }
+
+    /* Input form */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .inp {
+      background: var(--purple-soft);
+      border: 2px solid transparent;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .inp:focus { border-color: var(--purple-light); background: white; box-shadow: 0 0 0 4px rgba(124,92,191,0.1); }
+    .inp::placeholder { color: var(--text-light); font-weight: 600; }
+
+    .btn-add {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      padding: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.25s;
+      box-shadow: 0 6px 20px rgba(124,92,191,0.3);
+    }
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(124,92,191,0.4); }
+    .btn-add:active { transform: translateY(0); }
+
+    /* Category bars */
+    .cat-list { display: flex; flex-direction: column; gap: 12px; }
+    .cat-item {}
+    .cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .cat-name { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .cat-amount { font-size: 13px; font-weight: 800; color: var(--purple); }
+    .cat-bar-bg { background: #F0EBF8; border-radius: 10px; height: 10px; overflow: hidden; }
+    .cat-bar { height: 100%; border-radius: 10px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+
+    /* Chart */
+    .chart-wrap { position: relative; }
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 120px;
+      padding: 0 4px;
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .bar-fill {
+      width: 100%;
+      border-radius: 10px 10px 0 0;
+      min-height: 4px;
+      transition: height 1s cubic-bezier(0.4,0,0.2,1);
+      background: linear-gradient(180deg, var(--purple-light) 0%, var(--purple) 100%);
+    }
+    .bar-label { font-size: 11px; font-weight: 700; color: var(--text-light); }
+    .bar-amt { font-size: 9px; font-weight: 700; color: var(--purple); display: none; }
+
+    /* Transaction table */
+    .txn-list { display: flex; flex-direction: column; gap: 10px; }
+    .txn-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--purple-soft);
+      border-radius: 16px;
+      transition: all 0.2s;
+    }
+    .txn-item:hover { background: #E8E1F8; }
+    .txn-icon {
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .txn-info { flex: 1; min-width: 0; }
+    .txn-desc { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .txn-meta { font-size: 11px; color: var(--text-light); font-weight: 600; margin-top: 2px; }
+    .txn-amount { font-size: 15px; font-weight: 900; color: var(--red); flex-shrink: 0; }
+    .txn-del {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+      padding: 4px;
+    }
+    .txn-del:hover { opacity: 1; }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 0;
+      color: var(--text-light);
+      font-weight: 700;
+    }
+    .empty-state .emoji { font-size: 42px; display: block; margin-bottom: 10px; }
+
+    /* Target card */
+    .target-card {
+      background: linear-gradient(135deg, #EAFAF1 0%, #D5F5E3 100%);
+      border: 2px solid #A9DFBF;
+    }
+    .target-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .target-info .t-label { font-size: 12px; font-weight: 700; color: #1E8449; opacity: 0.7; }
+    .target-info .t-value { font-size: 22px; font-weight: 900; color: #1E8449; }
+    .target-badge {
+      background: #27AE60;
+      color: white;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .target-badge.fail { background: #E74C3C; }
+    .target-progress-bg { background: rgba(0,0,0,0.1); border-radius: 10px; height: 12px; }
+    .target-progress { background: linear-gradient(90deg, #27AE60, #2ECC71); border-radius: 10px; height: 100%; transition: width 1s ease; }
+
+    /* Settings toggle */
+    .settings-card { border: 2px dashed #C9B8EC; }
+    .settings-title { cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; }
+    .settings-body { margin-top: 14px; display: none; }
+    .settings-body.open { display: block; }
+    .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .settings-label { font-size: 11px; font-weight: 700; color: var(--text-light); margin-bottom: 4px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #2D1B69;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 999;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--purple-light); border-radius: 4px; }
+
+    select.inp { appearance: none; }
+  </style>
+</head>
+<body>
+
+<div class="blob-container">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="container">
+
+  <div class="header">
+    <h1>💰 Dompet Mingguan</h1>
+    <p>Catat, hemat, dan capai target!</p>
+    <div class="week-badge" id="weekBadge">Minggu ini</div>
+  </div>
+
+  <!-- Hero Card -->
+  <div class="card hero-card" style="padding:0; box-shadow: 0 12px 40px rgba(124,92,191,0.35);">
+    <div style="padding: 24px 22px 20px;">
+      <div class="hero-inner">
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="45" />
+            <circle class="ring-progress" id="ringProgress" cx="50" cy="50" r="45" />
+          </svg>
+          <div class="ring-center">
+            <div class="ring-pct" id="ringPct">0%</div>
+            <div class="ring-label">dipakai</div>
+          </div>
+        </div>
+        <div class="hero-info">
+          <div class="status-badge" id="statusBadge">⏳ Loading...</div>
+          <div class="hero-budget">Total Pengeluaran</div>
+          <div class="hero-amount" id="heroSpent">Rp 0</div>
+          <div class="hero-sub">dari <span id="heroBudget">Rp 0</span> budget</div>
+        </div>
+      </div>
+      <div class="hero-remaining">
+        <span>💸 Sisa: <strong id="heroRemaining">Rp 0</strong></span>
+        <span>🎯 Target: <strong id="heroTarget">Rp 0</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="stats-row">
+    <div class="stat-mini green">
+      <div class="icon">💚</div>
+      <div class="label">Tabungan minggu ini</div>
+      <div class="value" id="statSaving">Rp 0</div>
+    </div>
+    <div class="stat-mini yellow">
+      <div class="icon">📊</div>
+      <div class="label">Rata-rata / hari</div>
+      <div class="value" id="statAvg">Rp 0</div>
+    </div>
+  </div>
+
+  <!-- Target Card -->
+  <div class="card target-card">
+    <div class="section-title"><span>🎯</span> Target Tabungan</div>
+    <div class="target-row">
+      <div class="target-info">
+        <div class="t-label">Tabungan saat ini</div>
+        <div class="t-value" id="targetSaving">Rp 0</div>
+      </div>
+      <div class="target-badge" id="targetBadge">✅ Tercapai!</div>
+    </div>
+    <div style="font-size:11px; font-weight:700; color:#1E8449; margin-bottom:8px;">
+      Target: <span id="targetGoal">Rp 0</span>
+    </div>
+    <div class="target-progress-bg">
+      <div class="target-progress" id="targetProgress" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Add Expense Card -->
+  <div class="card">
+    <div class="section-title"><span>➕</span> Tambah Pengeluaran</div>
+    <div class="chip-row" id="chipRow">
+      {% for key, cat in categories.items() %}
+      <div class="chip" 
+           data-cat="{{ key }}"
+           style="background-color: {{ cat.color }}22; color: #444;">
+        {{ cat.icon }} {{ cat.label }}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="input-group">
+      <input type="hidden" id="selectedCat" value="">
+      <input class="inp" id="inputDesc" placeholder="✍️ Keterangan pengeluaran..." />
+      <div class="input-row">
+        <input class="inp" id="inputAmount" type="number" placeholder="💵 Jumlah (Rp)" min="0" />
+        <input class="inp" id="inputDate" type="date" />
+      </div>
+      <button class="btn-add" onclick="addTransaction()">✨ Catat Pengeluaran</button>
+    </div>
+  </div>
+
+  <!-- Category Breakdown -->
+  <div class="card">
+    <div class="section-title"><span>🗂️</span> Breakdown Kategori</div>
+    <div class="cat-list" id="catList">
+      <div class="empty-state"><span class="emoji">📭</span>Belum ada pengeluaran</div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="card">
+    <div class="section-title"><span>📈</span> Grafik Harian</div>
+    <div class="bar-chart" id="barChart">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Transactions -->
+  <div class="card">
+    <div class="section-title"><span>📋</span> Riwayat Pengeluaran</div>
+    <div class="txn-list" id="txnList">
+      <div class="empty-state"><span class="emoji">🧾</span>Belum ada transaksi minggu ini</div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="card settings-card">
+    <div class="settings-title section-title" onclick="toggleSettings()">
+      <span><span>⚙️</span> Pengaturan</span>
+      <span id="settingsArrow">▼</span>
+    </div>
+    <div class="settings-body" id="settingsBody">
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Budget Mingguan (Rp)</div>
+          <input class="inp" id="setBudget" type="number" placeholder="200000" />
+        </div>
+        <div>
+          <div class="settings-label">Target Tabungan (Rp)</div>
+          <input class="inp" id="setTarget" type="number" placeholder="50000" />
+        </div>
+      </div>
+      <button class="btn-add" style="background: linear-gradient(135deg, #27AE60, #2ECC71); box-shadow: 0 6px 20px rgba(39,174,96,0.3);" onclick="saveSettings()">💾 Simpan Pengaturan</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const fmt = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+
+// Init date
+document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
+
+// Chip selection
+let selectedCat = '';
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    selectedCat = chip.dataset.cat;
+  });
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function toggleSettings() {
+  const body = document.getElementById('settingsBody');
+  const arrow = document.getElementById('settingsArrow');
+  body.classList.toggle('open');
+  arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+async function loadSummary() {
+  const res = await fetch('/api/summary');
+  const d = await res.json();
+
+  // Week badge
+  const ws = new Date(d.week_start);
+  const we = new Date(ws); we.setDate(we.getDate() + 6);
+  const fmt2 = dt => dt.toLocaleDateString('id-ID', {day:'numeric', month:'short'});
+  document.getElementById('weekBadge').textContent = `📅 ${fmt2(ws)} – ${fmt2(we)}`;
+
+  // Hero
+  document.getElementById('heroSpent').textContent = fmt(d.total_spent);
+  document.getElementById('heroBudget').textContent = fmt(d.weekly_budget);
+  document.getElementById('heroRemaining').textContent = fmt(d.remaining);
+  document.getElementById('heroTarget').textContent = fmt(d.weekly_target);
+  document.getElementById('statusBadge').textContent = d.status.label;
+
+  // Ring animation
+  const pct = d.percentage;
+  const circumference = 283;
+  const offset = circumference - (pct / 100) * circumference;
+  const ring = document.getElementById('ringProgress');
+  document.getElementById('ringPct').textContent = pct + '%';
+  setTimeout(() => {
+    ring.style.strokeDashoffset = offset;
+    if (pct <= 50) ring.style.stroke = '#26de81';
+    else if (pct <= 75) ring.style.stroke = '#FFD93D';
+    else ring.style.stroke = '#FC5C65';
+  }, 300);
+
+  // Stats
+  document.getElementById('statSaving').textContent = fmt(d.savings);
+  const daysElapsed = Math.max(1, d.daily.filter(day => day.amount > 0).length);
+  document.getElementById('statAvg').textContent = fmt(d.total_spent / 7);
+
+  // Target
+  document.getElementById('targetSaving').textContent = fmt(d.savings);
+  document.getElementById('targetGoal').textContent = fmt(d.weekly_target);
+  const tPct = Math.min(100, d.weekly_target > 0 ? (d.savings / d.weekly_target * 100) : 0);
+  setTimeout(() => {
+    document.getElementById('targetProgress').style.width = tPct + '%';
+  }, 400);
+  const tbadge = document.getElementById('targetBadge');
+  if (d.target_achieved) {
+    tbadge.textContent = '🎉 Tercapai!'; tbadge.className = 'target-badge';
+  } else {
+    tbadge.textContent = '⚡ Belum'; tbadge.className = 'target-badge fail';
+  }
+
+  // Category bars
+  const catList = document.getElementById('catList');
+  const activeCats = d.categories.filter(c => c.amount > 0);
+  if (activeCats.length === 0) {
+    catList.innerHTML = '<div class="empty-state"><span class="emoji">📭</span>Belum ada pengeluaran</div>';
+  } else {
+    catList.innerHTML = activeCats.map(c => `
+      <div class="cat-item">
+        <div class="cat-header">
+          <div class="cat-name">${c.icon} ${c.label}</div>
+          <div class="cat-amount">${fmt(c.amount)}</div>
+        </div>
+        <div class="cat-bar-bg">
+          <div class="cat-bar" data-w="${c.percentage}" style="width:0; background:${c.color};"></div>
+        </div>
+      </div>
+    `).join('');
+    setTimeout(() => {
+      document.querySelectorAll('.cat-bar').forEach(b => {
+        b.style.width = b.dataset.w + '%';
+      });
+    }, 300);
+  }
+
+  // Bar chart
+  const chart = document.getElementById('barChart');
+  const maxAmt = Math.max(...d.daily.map(x => x.amount), 1);
+  chart.innerHTML = d.daily.map(day => {
+    const h = Math.round((day.amount / maxAmt) * 100);
+    return `<div class="bar-col">
+      <div class="bar-fill" style="height:${h}px; max-height: 100px;"></div>
+      <div class="bar-label">${day.day}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadTransactions() {
+  const res = await fetch('/api/transactions');
+  const d = await res.json();
+  const list = document.getElementById('txnList');
+  if (!d.transactions.length) {
+    list.innerHTML = '<div class="empty-state"><span class="emoji">🧾</span>Belum ada transaksi minggu ini</div>';
+    return;
+  }
+  list.innerHTML = d.transactions.map(t => `
+    <div class="txn-item" id="txn-${t.id}">
+      <div class="txn-icon" style="background:${t.color}33;">${t.icon}</div>
+      <div class="txn-info">
+        <div class="txn-desc">${escHtml(t.description)}</div>
+        <div class="txn-meta">${t.cat_label} · ${formatDate(t.date)}</div>
+      </div>
+      <div class="txn-amount">-${fmt(t.amount)}</div>
+      <button class="txn-del" onclick="deleteTxn('${t.id}')" title="Hapus">🗑️</button>
+    </div>
+  `).join('');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+async function addTransaction() {
+  const desc = document.getElementById('inputDesc').value.trim();
+  const amount = parseFloat(document.getElementById('inputAmount').value);
+  const date = document.getElementById('inputDate').value;
+
+  if (!selectedCat) { showToast('⚠️ Pilih kategori dulu!'); return; }
+  if (!desc) { showToast('⚠️ Isi keterangan dulu!'); return; }
+  if (!amount || amount <= 0) { showToast('⚠️ Masukkan jumlah yang valid!'); return; }
+
+  const res = await fetch('/api/transactions', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ description: desc, amount, category: selectedCat, date })
+  });
+  const d = await res.json();
+  if (d.success) {
+    document.getElementById('inputDesc').value = '';
+    document.getElementById('inputAmount').value = '';
+    showToast('✅ Pengeluaran berhasil dicatat!');
+    refresh();
+  } else {
+    showToast('❌ ' + (d.error || 'Gagal menyimpan'));
+  }
+}
+
+async function deleteTxn(id) {
+  const el = document.getElementById('txn-' + id);
+  if (el) { el.style.opacity = '0.5'; el.style.transform = 'scale(0.95)'; }
+  await fetch('/api/transactions/' + id, { method: 'DELETE' });
+  showToast('🗑️ Transaksi dihapus');
+  refresh();
+}
+
+async function saveSettings() {
+  const budget = parseFloat(document.getElementById('setBudget').value);
+  const target = parseFloat(document.getElementById('setTarget').value);
+  if (!budget || !target) { showToast('⚠️ Isi semua pengaturan!'); return; }
+  await fetch('/api/settings', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ weekly_budget: budget, weekly_target: target })
+  });
+  showToast('✅ Pengaturan tersimpan!');
+  refresh();
+}
+
+async function loadSettings() {
+  const res = await fetch('/api/settings');
+  const d = await res.json();
+  document.getElementById('setBudget').value = d.weekly_budget;
+  document.getElementById('setTarget').value = d.weekly_target;
+}
+
+function refresh() {
+  loadSummary();
+  loadTransactions();
+}
+
+// Init
+refresh();
+loadSettings();
+</script>
+</body>
+</html>
